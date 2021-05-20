@@ -1,0 +1,87 @@
+{
+  "version": 2,
+  "extra_config": {
+    "github_com/devopsfaith/krakend/transport/http/server/handler": {
+      "name": "handler-example",
+      "extraconfig":"something"
+   }
+
+  },
+  "timeout": "3000ms",
+  "cache_ttl": "300s",
+  "output_encoding": "json",
+  "name": "test-service",
+  "plugin": {
+      "pattern":".so",
+      "folder": "./plugins/"
+  },
+  "endpoints": [
+    {
+      "endpoint": "/get/{banana}",
+      "method": "GET",
+      "extra_config": {
+
+      },
+      "output_encoding": "json",
+      "concurrent_calls": 1,
+      "headers_to_pass":[
+        "*"
+      ],
+      "backend": [
+        {
+          "url_pattern": "/get/{banana}",
+          "encoding": "json",
+          "sd": "static",
+          "extra_config": {
+
+          },
+          "method": "GET",
+          "host": [
+            "echo:8080"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/proxy/{banana}",
+      "method": "GET",
+      "headers_to_pass":[
+        "*"
+      ],
+      "backend": [
+        {
+          "host": [ "http://echo:8080" ],
+          "url_pattern": "/proxy/{banana}",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/transport/http/client/executor": {
+              "name": "client-example",
+              "header": "test-header",
+              "backend": "http://echo:8080"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/proxy-post/{banana}",
+      "method": "POST",
+      "headers_to_pass":[
+        "*"
+      ],
+      "backend": [
+        {
+          "host": [ "http://ignore.this:8080" ],
+          "url_pattern": "/proxy/{banana}",
+          "extra_config": {
+            "github.com/devopsfaith/krakend/transport/http/client/executor": {
+              "name": "client-example",
+              "header": "test-header",
+              "backend": "http://echo:8080"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

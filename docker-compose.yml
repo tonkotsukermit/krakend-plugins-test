@@ -1,0 +1,24 @@
+version: '3'
+services:
+  krakend:
+    command:
+    - run
+    - --config
+    - /etc/krakend/krakend.json
+    build:
+      context: .
+      dockerfile: ./build/krakend/Dockerfile
+    ports:
+    - 8080:8080
+    volumes:
+    - "./krakend.json:/etc/krakend/krakend.json"
+    environment: 
+      - ELASTIC_APM_ENVIRONMENT=local
+      - ELASTIC_APM_SERVER_URL=http://apm-server:8200
+      - ELASTIC_APM_SERVICE_NAME=krakend
+  echo:
+    build:
+      context: .
+      dockerfile: ./build/echo/Dockerfile
+    ports:
+      - "9090:8080"
